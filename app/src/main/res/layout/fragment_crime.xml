@@ -17,8 +17,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:hint="@string/crime_title_hint"
         android:inputType="textPersonName"
-        android:text="@string/crime_title_hint" />
+         />
 
     <TextView
         android:id="@+id/listSepView"
@@ -30,8 +31,7 @@
     <Button
         android:id="@+id/crime_date"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Button" />
+        android:layout_height="wrap_content" />
 
     <CheckBox
         android:id="@+id/crimeSolved"
