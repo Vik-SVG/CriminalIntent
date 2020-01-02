@@ -11,6 +11,7 @@ public class Crime {
     private String mTitle;
     private Date mDate;
     private boolean mSolved;
+    private boolean mRequiredPolice;
 
 
     public Crime(){
@@ -46,4 +47,5 @@ public class Crime {
     public void setSolved(boolean solved) {
         mSolved = solved;
     }
+
 }
