@@ -48,4 +48,11 @@ public class Crime {
         mSolved = solved;
     }
 
+    public boolean isRequiredPolice() {
+        return mRequiredPolice;
+    }
+
+    public void setRequiredPolice(boolean requiredPolice) {
+        mRequiredPolice = requiredPolice;
+    }
 }
