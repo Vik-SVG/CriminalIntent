@@ -1,10 +1,12 @@
 package com.bignerdranch.android.criminalintent;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,11 +15,16 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.format.DateFormat;
+
+//import java.text.DateFormat;
 import java.util.List;
 
 public class CrimeListFragment extends Fragment {
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
+    private ImageView mSolvedImageView;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -48,13 +55,23 @@ public class CrimeListFragment extends Fragment {
 
         private Crime mCrime;
 
-        public void bind(Crime crime){
-            mCrime = crime;
+        private void bind(Crime crimeT){
+            mCrime = crimeT;
             mTitleTextView.setText(mCrime.getTitle());
-            mDateTextView.setText(mCrime.getDate().toString());
+
+            mDateTextView.setText(DateFormat.format("EEEE, MMM dd, yyyy", crimeT.getDate()));
+
+           // if(crime.isSolved()){
+           //     mSolvedImageView.setVisibility(View.VISIBLE);
+          //  }else mSolvedImageView.setVisibility(View.GONE);
+
+            if(crimeT.isSolved()) {
+                mSolvedImageView.setVisibility(View.VISIBLE);
+            } else mSolvedImageView.setVisibility(View.GONE);
+           // mSolvedImageView.setVisibility(crimeT.isSolved() ? View.VISIBLE : View.GONE); //решение универсальное
         }
 
-        public CrimeHolder(LayoutInflater inflater, ViewGroup parent) {
+        private CrimeHolder(LayoutInflater inflater, ViewGroup parent) {
 
             super(inflater.inflate(R.layout.list_item_crime, parent, false));
 
@@ -63,11 +80,16 @@ public class CrimeListFragment extends Fragment {
 
             mTitleTextView =(TextView) itemView.findViewById(R.id.crime_title);
             mDateTextView = (TextView)itemView.findViewById(R.id.crime_date);
+            mSolvedImageView = (ImageView) itemView.findViewById(R.id.crime_solved);
         }
 
         @Override
         public void onClick(View view){
-            Toast.makeText(getActivity(), mCrime.getTitle()+" clicked Simple!", Toast.LENGTH_LONG).show();
+            //Intent intent = new Intent(getActivity(), CrimeActivity.class);
+            Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getID());
+            startActivity(intent);
+
+            //Toast.makeText(getActivity(), mCrime.getTitle()+" clicked Simple!", Toast.LENGTH_LONG).show();
         }
 
     }
@@ -82,14 +104,23 @@ public class CrimeListFragment extends Fragment {
 
         private Crime mCrime;
 
-        public void bind(Crime crime){
-            mCrime = crime;
+        private void bind(Crime crimeP){
+            mCrime = crimeP;
             mTitleTextView.setText(mCrime.getTitle());
-            mDateTextView.setText(mCrime.getDate().toString());
+            //mDateTextView.setText(mCrime.getDate().toString());
+            mDateTextView.setText(DateFormat.format("EEEE, MMM dd, yyyy", crimeP.getDate()));
+
+            //mSolvedImageView.setVisibility(crimeP.isSolved() ? View.VISIBLE : View.GONE); //решение универсальное
+           // mSolvedImageView.setVisibility(View.VISIBLE);
+            if(crimeP.isSolved()) {
+                mSolvedImageView.setVisibility(View.VISIBLE);
+            } else mSolvedImageView.setVisibility(View.GONE);
+
+
             //сюда добавить значение "requiredPolice", которое берется из CrimeFragment(из него же и задается) и обновляется при изменении
         }
 
-        public PoliceHolder (LayoutInflater inflater, ViewGroup parent) {
+        private PoliceHolder (LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_police, parent, false));
             //вот это тоже можно перенести в if и использовать аргумент int isRequiredPolice, чтобы все в одном классе было
 
@@ -112,6 +143,7 @@ public class CrimeListFragment extends Fragment {
 
             mTitleTextView=(TextView) itemView.findViewById(R.id.crime_title);
             mDateTextView = (TextView)itemView.findViewById(R.id.crime_date);
+            mSolvedImageView = (ImageView) itemView.findViewById(R.id.crime_solved);
 
         }
 
@@ -125,7 +157,7 @@ public class CrimeListFragment extends Fragment {
 
 
 
-    public class CrimeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+    public class CrimeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private List<Crime>mCrimes;
 
@@ -140,8 +172,10 @@ public class CrimeListFragment extends Fragment {
             Crime crime = mCrimes.get(position); // тут может как-то по-дргуому можно, хз
 
             if(crime.isRequiredPolice()){
-                return 1;
+               return 1;
             } else return 0;
+
+           // return crime.isRequiredPolice() ? 1 : 0;
         }
 
 
@@ -152,19 +186,16 @@ public class CrimeListFragment extends Fragment {
 
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
 
-            if(viewType == 0){
-                return new CrimeHolder(layoutInflater, parent);
-            }else
-                return new PoliceHolder(layoutInflater, parent);
 
+           if(viewType == 1){
+                return new PoliceHolder(layoutInflater, parent);
+            }else
+                return new CrimeHolder(layoutInflater, parent);
 
             //свитч почему-то не возвращает значение. Надо исправить.
-            /* switch (viewType) {
-                case 0:
-                    return new CrimeHolder(layoutInflater, parent);
-                case 2:
-                    return new PoliceHolder(layoutInflater, parent);
-            } */
+
+
+
         }
 
            // return new CrimeHolder(layoutInflater, parent, viewType);  ////
@@ -177,30 +208,29 @@ public class CrimeListFragment extends Fragment {
 
             // crime.isRequiredPolice(); вот это выражение помогает сделать без getItemViewType
 
-            if (holder.getItemViewType()==0){
-
-                CrimeHolder crimeHolder = (CrimeHolder)holder;
-                crimeHolder.bind(crime);
-
-            }else {
+            /*if (holder.getItemViewType()==1){
                 PoliceHolder policeHolder = (PoliceHolder)holder;
                 policeHolder.bind(crime);
-            }
+
+            }else {
+                CrimeHolder crimeHolder = (CrimeHolder)holder;
+                crimeHolder.bind(crime);
+            }*/
 
             //тоже свитч не реализуется
 
-          /*  switch (holder.getItemViewType()){
+            switch (holder.getItemViewType()){
                 case 0:
                     CrimeHolder crimeHolder = (CrimeHolder)holder;
 
                     crimeHolder.bind(crime);  ///не факт
                     break;
 
-                case 2:
+                case 1:
                     PoliceHolder policeHolder = (PoliceHolder)holder;
                     policeHolder.bind(crime);
                     break;
-            } */
+            }
 
          //   Crime crime = mCrimes.get(position);
           //  holder.bind(crime);
