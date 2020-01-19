@@ -23,7 +23,10 @@ import java.util.List;
 public class CrimeListFragment extends Fragment {
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
-    private ImageView mSolvedImageView;
+    private static final int REQUEST_CRIME = 1;
+    private int mLastClikedPosition=-1;
+
+
 
 
     @Override
@@ -38,12 +41,25 @@ public class CrimeListFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public  void onResume(){
+        super.onResume();
+        updateUI();
+    }
+
     private void updateUI(){
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
-        mAdapter = new CrimeAdapter(crimes);
-        mCrimeRecyclerView.setAdapter(mAdapter);
-
+        if (mAdapter == null) {
+            mAdapter = new CrimeAdapter(crimes);
+            mCrimeRecyclerView.setAdapter(mAdapter);
+        }else {
+            if (mLastClikedPosition > -1) {
+                mAdapter.notifyItemChanged(mLastClikedPosition);
+            } else {
+                mAdapter.notifyDataSetChanged();
+            }
+        }
     }
 
 
@@ -52,6 +68,7 @@ public class CrimeListFragment extends Fragment {
 
         private TextView mTitleTextView;
         private TextView mDateTextView;
+        private ImageView mSolvedImageView;
 
         private Crime mCrime;
 
@@ -86,10 +103,20 @@ public class CrimeListFragment extends Fragment {
         @Override
         public void onClick(View view){
             //Intent intent = new Intent(getActivity(), CrimeActivity.class);
-            Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getID());
-            startActivity(intent);
+            //Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getID());
+            Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getID());
+
+            mLastClikedPosition = this.getAdapterPosition();
+            startActivityForResult(intent, REQUEST_CRIME);
 
             //Toast.makeText(getActivity(), mCrime.getTitle()+" clicked Simple!", Toast.LENGTH_LONG).show();
+        }
+
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        if(requestCode == REQUEST_CRIME){
+
         }
 
     }
@@ -101,6 +128,7 @@ public class CrimeListFragment extends Fragment {
         private TextView mTitleTextView;
         private TextView mDateTextView;
         private Button mCallPolice;
+        private ImageView mSolvedImageP;
 
         private Crime mCrime;
 
@@ -113,8 +141,8 @@ public class CrimeListFragment extends Fragment {
             //mSolvedImageView.setVisibility(crimeP.isSolved() ? View.VISIBLE : View.GONE); //решение универсальное
            // mSolvedImageView.setVisibility(View.VISIBLE);
             if(crimeP.isSolved()) {
-                mSolvedImageView.setVisibility(View.VISIBLE);
-            } else mSolvedImageView.setVisibility(View.GONE);
+                mSolvedImageP.setVisibility(View.VISIBLE);
+            } else mSolvedImageP.setVisibility(View.GONE);
 
 
             //сюда добавить значение "requiredPolice", которое берется из CrimeFragment(из него же и задается) и обновляется при изменении
@@ -127,7 +155,10 @@ public class CrimeListFragment extends Fragment {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getActivity(), mCrime.getTitle()+" clicked Police!", Toast.LENGTH_LONG).show();
+                   // Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getID());
+                    Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getID());
+                    startActivityForResult(intent, REQUEST_CRIME);
+                    //Toast.makeText(getActivity(), mCrime.getTitle()+" clicked Police!", Toast.LENGTH_LONG).show();
                 }
             });
 
@@ -143,7 +174,7 @@ public class CrimeListFragment extends Fragment {
 
             mTitleTextView=(TextView) itemView.findViewById(R.id.crime_title);
             mDateTextView = (TextView)itemView.findViewById(R.id.crime_date);
-            mSolvedImageView = (ImageView) itemView.findViewById(R.id.crime_solved);
+            mSolvedImageP = (ImageView) itemView.findViewById(R.id.crime_solved);
 
         }
 
