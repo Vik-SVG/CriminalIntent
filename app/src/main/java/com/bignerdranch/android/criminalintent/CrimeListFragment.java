@@ -54,11 +54,11 @@ public class CrimeListFragment extends Fragment {
             mAdapter = new CrimeAdapter(crimes);
             mCrimeRecyclerView.setAdapter(mAdapter);
         }else {
-            if (mLastClikedPosition > -1) {
-                mAdapter.notifyItemChanged(mLastClikedPosition);
-            } else {
+//            if (mLastClikedPosition > -1) {  тут нужно очехлить и обкашлять вопрос
+//              mAdapter.notifyItemChanged(mLastClikedPosition);
+//            } else {
                 mAdapter.notifyDataSetChanged();
-            }
+//            }
         }
     }
 
@@ -76,9 +76,8 @@ public class CrimeListFragment extends Fragment {
             mCrime = crimeT;
             mTitleTextView.setText(mCrime.getTitle());
 
-            mDateTextView.setText(DateFormat.format("EEEE, MMM dd, yyyy", crimeT.getDate()));
 
-           // if(crime.isSolved()){
+            // if(crime.isSolved()){
            //     mSolvedImageView.setVisibility(View.VISIBLE);
           //  }else mSolvedImageView.setVisibility(View.GONE);
 
@@ -86,6 +85,12 @@ public class CrimeListFragment extends Fragment {
                 mSolvedImageView.setVisibility(View.VISIBLE);
             } else mSolvedImageView.setVisibility(View.GONE);
            // mSolvedImageView.setVisibility(crimeT.isSolved() ? View.VISIBLE : View.GONE); //решение универсальное
+
+            updadeDate(crimeT);
+        }
+
+        private void updadeDate(Crime crimeT) {
+            mDateTextView.setText(DateFormat.format("EEEE, MMM dd, yyyy", crimeT.getDate()));
         }
 
         private CrimeHolder(LayoutInflater inflater, ViewGroup parent) {
@@ -157,6 +162,7 @@ public class CrimeListFragment extends Fragment {
                 public void onClick(View v) {
                    // Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getID());
                     Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getID());
+                    mLastClikedPosition = getAdapterPosition();
                     startActivityForResult(intent, REQUEST_CRIME);
                     //Toast.makeText(getActivity(), mCrime.getTitle()+" clicked Police!", Toast.LENGTH_LONG).show();
                 }
@@ -177,6 +183,8 @@ public class CrimeListFragment extends Fragment {
             mSolvedImageP = (ImageView) itemView.findViewById(R.id.crime_solved);
 
         }
+
+
 
       /*  @Override
         public void onClick(View view){  //можно реализовать через if isPoliseRequired, в одном классе
