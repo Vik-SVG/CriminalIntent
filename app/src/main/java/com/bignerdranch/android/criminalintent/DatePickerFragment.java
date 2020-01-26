@@ -50,6 +50,8 @@ public class DatePickerFragment extends DialogFragment {
         mDatePicker = (DatePicker) v.findViewById(R.id.dialog_date_picker);
         mDatePicker.init(year, month, day, null);
 
+        final int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        final int min = calendar.get(Calendar.MINUTE);
 
         return new AlertDialog.Builder(getActivity())
                 .setView(v)
@@ -61,7 +63,7 @@ public class DatePickerFragment extends DialogFragment {
                         int year = mDatePicker.getYear();
                         int month = mDatePicker.getMonth();
                         int day = mDatePicker.getDayOfMonth();
-                        Date date = new GregorianCalendar(year, month, day).getTime();
+                            Date date = new GregorianCalendar(year, month, day, hour, min).getTime();
                         sendResult(Activity.RESULT_OK, date);
                     }
                 })
