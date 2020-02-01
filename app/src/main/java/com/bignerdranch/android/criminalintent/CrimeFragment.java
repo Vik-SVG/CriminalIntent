@@ -4,9 +4,6 @@ package com.bignerdranch.android.criminalintent;
 //import android.app.Activity;
 //import android.content.Context;
 import android.app.Activity;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -19,7 +16,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,7 +23,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 //import java.util.List;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
@@ -106,11 +101,15 @@ public class CrimeFragment extends Fragment {
         mDateButton.setOnClickListener(new View.OnClickListener() {
         @Override
             public void onClick(View V){
+
             FragmentManager manager = getFragmentManager();
             DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
-
             dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
         dialog.show(manager, DIALOG_DATE);
+
+            /*Intent intent = DatePickerActivity.newIntent(getContext(), mCrime.getDate());
+            startActivityForResult(intent, REQUEST_DATE);*/
+
         }
                                        });
 
@@ -189,7 +188,7 @@ public class CrimeFragment extends Fragment {
     private void updateDate() {
        // mDateButton.setText(mCrime.getDate().toString());
         mDateButton.setText(DateFormat.format("EEEE, MMM dd, yyyy", mCrime.getDate()));
-        mTimeButton.setText(mCrime.getDate().toString());
+        mTimeButton.setText(DateFormat.format("HH:mm", mCrime.getDate()));
        // mTimeButton.setText(DateFormat.format("H:m:s", mCrime.getDate()));
     }
 

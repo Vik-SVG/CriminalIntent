@@ -1,8 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<DatePicker xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/dialog_date_picker"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:calendarViewShown="false">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-</DatePicker>
+
+    <DatePicker
+        android:id="@+id/dialog_date_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:calendarViewShown="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible">
+
+    </DatePicker>
+
+    <Button
+        android:id="@+id/date_pick_butt"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@android:string/VideoView_error_button"
+        android:textColor="#FFC107"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/dialog_date_picker"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_date_picker" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
