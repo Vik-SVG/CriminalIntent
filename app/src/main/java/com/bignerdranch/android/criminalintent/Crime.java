@@ -6,12 +6,13 @@ import java.util.UUID;
 public class Crime {
 
 
-
     private UUID mID;
     private String mTitle;
     private Date mDate;
     private boolean mSolved;
+    private String mSuspect;
     private boolean mRequiredPolice;
+    private String mSuspectPhone;
 
 
     public Crime(){
@@ -49,6 +50,22 @@ public class Crime {
 
     public boolean isSolved() {
         return mSolved;
+    }
+
+    public String getSuspect(){
+        return mSuspect;
+    }
+
+    public void setSuspect(String suspect){
+        mSuspect = suspect;
+    }
+
+    public String getSuspectPhone() { return mSuspectPhone; }
+
+    public void setSuspectPhone(String mSuspectPhone) { this.mSuspectPhone = mSuspectPhone; }
+
+    public String getPhotoFileName(){
+        return "IMG_" + getID().toString()+".jpg";
     }
 
     public void setSolved(boolean solved) {
