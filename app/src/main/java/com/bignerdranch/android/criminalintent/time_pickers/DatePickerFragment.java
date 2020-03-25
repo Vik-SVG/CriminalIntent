@@ -1,4 +1,4 @@
-package com.bignerdranch.android.criminalintent;
+package com.bignerdranch.android.criminalintent.time_pickers;
 
 import android.app.Activity;
 //import android.app.Dialog;
@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.DatePicker;
 
 import androidx.fragment.app.DialogFragment;
+
+import com.bignerdranch.android.criminalintent.R;
 
 import java.util.Calendar;
 import java.util.Date;

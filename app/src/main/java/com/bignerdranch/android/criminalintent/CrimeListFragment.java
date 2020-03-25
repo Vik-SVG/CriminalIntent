@@ -1,5 +1,6 @@
 package com.bignerdranch.android.criminalintent;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,17 +16,18 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.text.format.DateFormat;
 
-//import java.text.DateFormat;
+import com.bignerdranch.android.criminalintent.swipers_helpers.ItemTouchHelperAdapter;
+import com.bignerdranch.android.criminalintent.swipers_helpers.SimpleItemTouchHelperCallback;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
+import java.util.UUID;
 
 public class CrimeListFragment extends Fragment {
     private RecyclerView mCrimeRecyclerView;
@@ -33,10 +35,28 @@ public class CrimeListFragment extends Fragment {
     private static final int REQUEST_CRIME = 1;
     private int mLastClikedPosition=-1;
     private boolean mSubtitleVisible;
+    private Callbacks mCallbacks;
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
     private TextView mListIsEmty;
     private FloatingActionButton mAddCrimeButton;
 
+    private ItemTouchHelper mItemTouchHelper;
+
+
+    private static final String ARG_CRIME_ID = "crime_id";
+
+
+
+    //interface for host activity
+    public interface Callbacks{
+        void onCrimeSelected(Crime crime);
+    }
+
+    @Override
+    public void onAttach(Context context){
+        super.onAttach(context);
+        mCallbacks = (Callbacks) context;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -61,6 +81,16 @@ public class CrimeListFragment extends Fragment {
             mSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
         }
 
+       CrimeLab crimeLab = CrimeLab.get(getActivity());
+        List<Crime> crimes = crimeLab.getCrimes();
+        mAdapter = new CrimeAdapter(crimes);
+        mCrimeRecyclerView.setAdapter(mAdapter);
+
+       // updateUI();
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mAdapter);
+        mItemTouchHelper = new ItemTouchHelper(callback);
+        mItemTouchHelper.attachToRecyclerView(mCrimeRecyclerView);
+
         mListIsEmty = view.findViewById(R.id.empty_list_text);
         mAddCrimeButton = view.findViewById(R.id.add_crime_buton);
 
@@ -69,9 +99,12 @@ public class CrimeListFragment extends Fragment {
             public void onClick(View v) {
                 Crime crime = new Crime();
                 CrimeLab.get(getActivity()).addCrime(crime);
-                Intent intent = CrimePagerActivity
+                updateUI();
+                mCallbacks.onCrimeSelected(crime);
+
+                /*Intent intent = CrimePagerActivity
                         .newIntent(getActivity(), crime.getID());
-                startActivity(intent);
+                startActivity(intent);*/
             }
         });
 
@@ -80,6 +113,8 @@ public class CrimeListFragment extends Fragment {
 
         return view;
     }
+
+
 
     @Override
     public  void onResume(){
@@ -113,9 +148,11 @@ public class CrimeListFragment extends Fragment {
             case R.id.new_crime:
             Crime crime = new Crime();
             CrimeLab.get(getActivity()).addCrime(crime);
-            Intent intent = CrimePagerActivity
+           /* Intent intent = CrimePagerActivity
                     .newIntent(getActivity(), crime.getID());
-            startActivity(intent);
+            startActivity(intent);*/
+           updateUI();
+           mCallbacks.onCrimeSelected(crime);
             return true;
             case R.id.show_subtitle:
                 mSubtitleVisible = !mSubtitleVisible;
@@ -136,6 +173,12 @@ public class CrimeListFragment extends Fragment {
 
     }
 
+    @Override
+    public void onDetach(){
+        super.onDetach();
+        mCallbacks = null;
+    }
+
     private void updateSubtitle(){
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         int crimeCount = crimeLab.getCrimes().size();
@@ -150,7 +193,7 @@ public class CrimeListFragment extends Fragment {
         activity.getSupportActionBar().setSubtitle(subtitle);
     }
 
-    private void updateUI(){
+    public void updateUI(){
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
 
@@ -223,11 +266,11 @@ public class CrimeListFragment extends Fragment {
         public void onClick(View view){
             //Intent intent = new Intent(getActivity(), CrimeActivity.class);
             //Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getID());
-            Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getID());
+//            Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getID());
 
             mLastClikedPosition = this.getAdapterPosition();
-            startActivityForResult(intent, REQUEST_CRIME);
-
+//            startActivityForResult(intent, REQUEST_CRIME);
+        mCallbacks.onCrimeSelected(mCrime);
             //Toast.makeText(getActivity(), mCrime.getTitle()+" clicked Simple!", Toast.LENGTH_LONG).show();
         }
 
@@ -275,20 +318,25 @@ public class CrimeListFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                    // Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getID());
-                    Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getID());
+
+                    //Intent intent = CrimePagerActivity.newIntent(getActivity(), mCrime.getID());
                     mLastClikedPosition = getAdapterPosition();
-                    startActivityForResult(intent, REQUEST_CRIME);
+                   // startActivityForResult(intent, REQUEST_CRIME);
+
+                    mCallbacks.onCrimeSelected(mCrime);
+
                     //Toast.makeText(getActivity(), mCrime.getTitle()+" clicked Police!", Toast.LENGTH_LONG).show();
                 }
             });
 
 
             mCallPolice = itemView.findViewById(R.id.button);
+            final String mCalledPolice = getString(R.string.police_called);
 
             mCallPolice.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getActivity(), mCrime.getTitle()+"Police called!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), mCrime.getTitle()+" "+mCalledPolice, Toast.LENGTH_LONG).show();
                 }
             });
 
@@ -310,13 +358,36 @@ public class CrimeListFragment extends Fragment {
 
 
 
-    public class CrimeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    public class CrimeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchHelperAdapter {
 
         private List<Crime>mCrimes;
 
         public CrimeAdapter(List<Crime>crimes){
             mCrimes = crimes;
         }
+
+
+
+        @Override
+        public void onItemDismiss(int position) {
+           // UUID crimeID = (UUID)getArguments().getSerializable(ARG_CRIME_ID);
+          //  Crime tCrime = CrimeLab.get(getActivity()).getCrime(crimeID);
+
+            Crime crime = mCrimes.get(position);
+
+            CrimeLab.get(getActivity()).deleteCrime(crime.getID());
+            mCrimes.remove(position);
+
+            // Back to CrimeListFragment by Intent.
+            notifyItemRemoved(position);
+            updateUI();
+        }
+
+        @Override
+        public boolean onItemMove(int fromPosition, int toPosition) {
+          return true;
+        }
+
 
 
         @Override

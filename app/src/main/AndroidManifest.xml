@@ -31,7 +31,7 @@
                 android:resource="@xml/files"
                 />
         </provider>
-        <activity android:name=".DatePickerActivity" />
+        <activity android:name=".time_pickers.DatePickerActivity" />
     </application>
 
 </manifest>

@@ -1,16 +1,15 @@
-package com.bignerdranch.android.criminalintent;
+package com.bignerdranch.android.criminalintent.time_pickers;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+
+import com.bignerdranch.android.criminalintent.SingleFragmentActivity;
 
 import java.util.Date;
 
-public class DatePickerActivity extends SingleFragmentActivity{
+public class DatePickerActivity extends SingleFragmentActivity {
     private static final String EXTRA_CRIME_DATE =
             "com.bignerdranch.android.criminalintent.crime_date"; //crime
 
