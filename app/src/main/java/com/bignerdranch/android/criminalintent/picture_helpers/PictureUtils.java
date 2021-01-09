@@ -25,7 +25,7 @@ public class PictureUtils {
         // calculationg the scales
         int inSampleSize = 1;
         if(scrHeight > destHeight || scrWidth>destWidth){
-            float heightScale = scrWidth/destHeight;
+            float heightScale = scrHeight/destHeight;
             float widthScale = scrWidth/destWidth;
             inSampleSize = Math.round(heightScale>widthScale ? heightScale : widthScale);
 

@@ -27,4 +27,6 @@
     <string name="required_police">Требуется полиция!</string>
     <string name="call_suspect">Позвонить</string>
     <string name="police_called">Звоним в полицию!</string>
+    <string name="date_format">EEEE, dd MMM, yyyy</string>
+
 </resources>

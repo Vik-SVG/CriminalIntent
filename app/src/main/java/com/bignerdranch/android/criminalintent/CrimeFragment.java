@@ -43,14 +43,15 @@ import com.bignerdranch.android.criminalintent.picture_helpers.PhotoViewerFragme
 import com.bignerdranch.android.criminalintent.picture_helpers.PictureUtils;
 import com.bignerdranch.android.criminalintent.time_pickers.DatePickerFragment;
 import com.bignerdranch.android.criminalintent.time_pickers.TimePickerFragment;
+import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
-import javax.security.auth.callback.Callback;
+import leakcanary.AppWatcher;
+import leakcanary.LeakCanary;
 
 import static android.widget.CompoundButton.*;
 
@@ -121,6 +122,8 @@ public interface Callbacks{
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeID);
         setHasOptionsMenu(true);
         mPhotoFile = CrimeLab.get(getActivity()).getPhotoFile(mCrime);
+
+
 
     }
 
@@ -279,7 +282,7 @@ public interface Callbacks{
         mPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri uri = FileProvider.getUriForFile(getActivity(),
+                Uri uri = FileProvider.getUriForFile(getActivity(), //intent for opening camera and making shots, however it's not scaled/. Should be replaced with camerax or fotofile
                         "com.bignerdranch.android.criminalintent.fileprovider",
                         mPhotoFile);
                 captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
@@ -296,6 +299,14 @@ public interface Callbacks{
         });
 
         mPhotoView = (ImageView) v.findViewById(R.id.crime_photo);
+
+        /*File photo = CrimeLab.get(getActivity()).getPhotoFile(mCrime);
+        Uri mUri = FileProvider.getUriForFile(getActivity(),
+                "com.bignerdranch.android.criminalintent.fileprovider",
+                photo);
+
+       Glide.with(getContext()).load(mUri).into(mPhotoView);*/
+
 
         ViewTreeObserver observer = mPhotoView.getViewTreeObserver();
         if (observer.isAlive()) {
@@ -316,13 +327,13 @@ public interface Callbacks{
             public void onClick(View view) {
                 Log.d("CrimeFragment", "click on photo");
                 if (mPhotoFile==null || !mPhotoFile.exists()){ return;} else {
-                    FragmentManager manager = getFragmentManager();
+                    FragmentManager manager = /*getFragmentManager();*/ getParentFragmentManager();
                     PhotoViewerFragment dialog = PhotoViewerFragment.newInstance(mPhotoFile);
-                  //  dialog.show(manager, DIALOG_PHOTO);
+                    dialog.show(manager, DIALOG_PHOTO);
 
-                    FragmentTransaction transaction = manager.beginTransaction();
-                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                    transaction.add(android.R.id.content, dialog).addToBackStack(null).commit();
+                   // FragmentTransaction transaction = manager.beginTransaction();
+                    //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    //ransaction.add(android.R.id.content, dialog).addToBackStack(null).commit();
 
                 }
             }
@@ -487,7 +498,11 @@ public interface Callbacks{
     }
 
     private void updateDate() {
-        mDateButton.setText(DateFormat.format("EEEE, MMM dd, yyyy", mCrime.getDate()));
+
+    String localeDateFormat = getResources().getString(R.string.date_format);
+
+        mDateButton.setText(DateFormat.format(localeDateFormat, mCrime.getDate()));
+
         mTimeButton.setText(DateFormat.format("HH:mm", mCrime.getTime()));
         if(mCrime.getSuspect()!=null){
             mSuspectButton.setText(mCrime.getSuspect());
@@ -526,7 +541,9 @@ public interface Callbacks{
                     mPhotoFile.getPath(), mPhotoWidth, mPhotoHeight
             );
 
-                    mPhotoView.setImageBitmap(bitmap);
+            Glide.with(getContext()).load(bitmap).into(mPhotoView);
+
+          //  mPhotoView.setImageBitmap(bitmap);
         }
     }
 

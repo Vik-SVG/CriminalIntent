@@ -1,5 +1,6 @@
 package com.bignerdranch.android.criminalintent.picture_helpers;
 
+import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,9 +9,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.bignerdranch.android.criminalintent.R;
+import com.bumptech.glide.Glide;
 
 import java.io.File;
 
@@ -31,7 +34,7 @@ public class PhotoViewerFragment extends DialogFragment {
             return fragment;
         }
 
-        @Nullable
+        /*@Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             mPhotoFile = (File) getArguments().getSerializable(ARG_PHOTO_FILE);
@@ -48,9 +51,9 @@ public class PhotoViewerFragment extends DialogFragment {
             }
 
             return view;
-        }
+        }*/
 
-   /* @Override
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
        // String imageFile = (String) getArguments().getSerializable(ARG_PHOTO_FILE);
 
@@ -64,6 +67,7 @@ public class PhotoViewerFragment extends DialogFragment {
         } else {
             Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(), getActivity());
             mPhotoView.setImageBitmap(bitmap);
+          //  Glide.with(getContext()).load(bitmap).into(mPhotoView);
         }
 
 
@@ -71,11 +75,7 @@ public class PhotoViewerFragment extends DialogFragment {
             .setView(v)
             .create();
 
-
-      *//*  return new AlertDialog.Builder(getActivity())
-                .setView(v)
-                .create();*//*
-    }*/
+    }
 
 
    /* @Override
